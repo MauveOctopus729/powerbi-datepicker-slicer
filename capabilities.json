@@ -1,0 +1,91 @@
+{
+    "dataRoles": [
+        {
+            "displayName": "Date Column",
+            "name": "dateColumn",
+            "kind": "Grouping",
+            "description": "The date column this slicer will filter on"
+        },
+        {
+            "displayName": "Default Dates",
+            "name": "defaultDates",
+            "kind": "Measure",
+            "description": "Drop measures here that return date values. The measure name becomes the dropdown label."
+        }
+    ],
+    "dataViewMappings": [
+        {
+            "conditions": [
+                {
+                    "dateColumn": { "max": 1 },
+                    "defaultDates": { "max": 20 }
+                }
+            ],
+            "categorical": {
+                "categories": {
+                    "for": { "in": "dateColumn" },
+                    "dataReductionAlgorithm": { "top": { "count": 30000 } }
+                },
+                "values": {
+                    "select": [
+                        {
+                            "for": { "in": "defaultDates" }
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "objects": {
+        "general": {
+            "properties": {
+                "earliestLabel": {
+                    "displayName": "Earliest Date Label",
+                    "type": { "text": true }
+                },
+                "latestLabel": {
+                    "displayName": "Latest Date Label",
+                    "type": { "text": true }
+                },
+                "dateFormat": {
+                    "displayName": "Date Display Format",
+                    "type": {
+                        "enumeration": [
+                            { "value": "dd/MM/yyyy", "displayName": "DD/MM/YYYY" },
+                            { "value": "MM/dd/yyyy", "displayName": "MM/DD/YYYY" },
+                            { "value": "yyyy-MM-dd", "displayName": "YYYY-MM-DD" },
+                            { "value": "dd MMM yyyy", "displayName": "DD MMM YYYY" }
+                        ]
+                    }
+                }
+            }
+        },
+        "style": {
+            "properties": {
+                "fontFamily": {
+                    "displayName": "Font Family",
+                    "type": { "formatting": { "fontFamily": true } }
+                },
+                "fontSize": {
+                    "displayName": "Font Size",
+                    "type": { "formatting": { "fontSize": true } }
+                },
+                "fontColor": {
+                    "displayName": "Font Colour",
+                    "type": { "fill": { "solid": { "color": true } } }
+                },
+                "accentColor": {
+                    "displayName": "Accent Colour",
+                    "type": { "fill": { "solid": { "color": true } } }
+                },
+                "backgroundColor": {
+                    "displayName": "Background Colour",
+                    "type": { "fill": { "solid": { "color": true } } }
+                }
+            }
+        }
+    },
+    "privileges": [],
+    "supportsHighlight": false,
+    "supportsMultiVisualSelection": false
+}
