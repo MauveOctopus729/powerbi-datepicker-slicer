@@ -96,6 +96,20 @@ class StyleSettings extends FormattingSettingsCard
         value: false
     });
 
+    inputBackgroundColor = new formattingSettings.ColorPicker(
+    {
+        name: "inputBackgroundColor",
+        displayName: "Input Background Colour",
+        value: { value: "#FFFFFF" }
+    });
+
+    transparentInputBackground = new formattingSettings.ToggleSwitch(
+    {
+        name: "transparentInputBackground",
+        displayName: "Transparent Input Background",
+        value: false
+    });
+
     slices: FormattingSettingsSlice[] =
     [
         this.transparentBackground,
@@ -103,7 +117,9 @@ class StyleSettings extends FormattingSettingsCard
         this.fontSize,
         this.fontColor,
         this.accentColor,
-        this.backgroundColor
+        this.backgroundColor,
+        this.inputBackgroundColor,
+        this.transparentInputBackground
     ];
 }
 

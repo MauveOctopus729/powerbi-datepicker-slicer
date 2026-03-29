@@ -77,6 +77,9 @@ export class Visual implements IVisual
     private selectedDate: Date | null = null;
     private filterTarget: models.IFilterColumnTarget | null = null;
     private dateFormat: string = "dd/MM/yyyy";
+    private styleTag: HTMLStyleElement;
+    private datePickerWrapper: HTMLElement;
+    private calendarIcon: SVGSVGElement;
 
     private formattingSettings: VisualFormattingSettingsModel;
     private formattingSettingsService: FormattingSettingsService;
@@ -102,12 +105,40 @@ export class Visual implements IVisual
         this.dropdown.addEventListener("change", () => this.onDropdownChange());
         this.container.appendChild(this.dropdown);
 
-        // Date picker
+        // Date picker wrapper
+        this.datePickerWrapper = document.createElement("div");
+        this.datePickerWrapper.style.position = "relative";
+        this.datePickerWrapper.style.width = "100%";
+
         this.datePicker = document.createElement("input");
         this.datePicker.type = "date";
         this.applyDatePickerStyles(this.datePicker);
         this.datePicker.addEventListener("change", () => this.onDatePickerChange());
-        this.container.appendChild(this.datePicker);
+        this.datePickerWrapper.appendChild(this.datePicker);
+
+        // Custom calendar icon
+        this.calendarIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        this.calendarIcon.setAttribute("viewBox", "0 0 24 24");
+        this.calendarIcon.setAttribute("width", "14");
+        this.calendarIcon.setAttribute("height", "14");
+        this.calendarIcon.style.position = "absolute";
+        this.calendarIcon.style.right = "8px";
+        this.calendarIcon.style.top = "50%";
+        this.calendarIcon.style.transform = "translateY(-50%)";
+        this.calendarIcon.style.pointerEvents = "none";
+        this.calendarIcon.innerHTML = `
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" fill="none" stroke="currentColor" stroke-width="2"/>
+            <line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" stroke-width="2"/>
+            <line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" stroke-width="2"/>
+            <line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" stroke-width="2"/>
+        `;
+        this.datePickerWrapper.appendChild(this.calendarIcon);
+
+        this.container.appendChild(this.datePickerWrapper);
+
+        // Style tag for pseudo-element styling
+        this.styleTag = document.createElement("style");
+        this.container.appendChild(this.styleTag);
     }
 
     private applyDropdownStyles(el: HTMLSelectElement): void
@@ -158,8 +189,10 @@ export class Visual implements IVisual
         const accentColor: string = this.formattingSettings.styleSettings.accentColor.value.value;
         const bgColor: string = this.formattingSettings.styleSettings.backgroundColor.value.value;
         const transparentBg: boolean = this.formattingSettings.styleSettings.transparentBackground.value;
+        const inputBgColor: string = this.formattingSettings.styleSettings.inputBackgroundColor.value.value;
+        const transparentInputBg: boolean = this.formattingSettings.styleSettings.transparentInputBackground.value;
 
-        this.applyVisualStyles(fontFamily, fontSize, fontColor, accentColor, bgColor, transparentBg);
+        this.applyVisualStyles(fontFamily, fontSize, fontColor, accentColor, bgColor, transparentBg, inputBgColor, transparentInputBg);
 
         // Extract date column
         const categorical = dataView.categorical;
@@ -367,7 +400,9 @@ export class Visual implements IVisual
         fontColor: string,
         accentColor: string,
         bgColor: string,
-        transparentBg: boolean
+        transparentBg: boolean,
+        inputBgColor: string,
+        transparentInputBg: boolean
     ): void
     {
         this.container.style.fontFamily = fontFamily;
@@ -384,6 +419,47 @@ export class Visual implements IVisual
         this.datePicker.style.borderColor = accentColor;
         this.datePicker.style.fontFamily = fontFamily;
 
+        const resolvedInputBg = transparentInputBg ? "transparent" : inputBgColor;
+        this.dropdown.style.backgroundColor = resolvedInputBg;
+        this.datePicker.style.backgroundColor = resolvedInputBg;
+
+        // Style the calendar icon colour
+        this.styleTag.textContent = `
+            input[type="date"]::-webkit-calendar-picker-indicator {
+                opacity: 0;
+                position: absolute;
+                right: 0;
+                width: 30px;
+                height: 100%;
+                cursor: pointer;
+            }
+        `;
+
+        this.calendarIcon.style.color = fontColor;
+        const iconSize = Math.max(fontSize - 2, 10);
+        this.calendarIcon.setAttribute("width", String(iconSize));
+        this.calendarIcon.setAttribute("height", String(iconSize));
+    }
+
+    private getIconFilter(hexColor: string): string
+    {
+        // For dark colours, no filter needed (icon is dark by default)
+        // For light colours, invert the icon
+        const hex = hexColor.replace("#", "");
+        const r = parseInt(hex.substring(0, 2), 16);
+        const g = parseInt(hex.substring(2, 4), 16);
+        const b = parseInt(hex.substring(4, 6), 16);
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+
+        if(brightness > 180)
+        {
+            return "invert(1) brightness(2)";
+        }
+        else if(brightness > 80)
+        {
+            return "invert(0.5)";
+        }
+        return "none";
     }
 
     private clearVisual(): void

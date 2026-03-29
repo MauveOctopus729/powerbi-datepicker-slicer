@@ -85,6 +85,14 @@
                 "transparentBackground": {
                     "displayName": "Transparent Background",
                     "type": { "bool": true }
+                },
+                "inputBackgroundColor": {
+                    "displayName": "Input Background Colour",
+                    "type": { "fill": { "solid": { "color": true } } }
+                },
+                "transparentInputBackground": {
+                    "displayName": "Transparent Input Background",
+                    "type": { "bool": true }
                 }
             }
         }
