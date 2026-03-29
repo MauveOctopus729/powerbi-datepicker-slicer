@@ -57,6 +57,14 @@
                             { "value": "dd MMM yyyy", "displayName": "DD MMM YYYY" }
                         ]
                     }
+                },
+                "showEarliest": {
+                    "displayName": "Show Earliest Date",
+                    "type": { "bool": true }
+                },
+                "showLatest": {
+                     "displayName": "Show Latest Date",
+                    "type": { "bool": true }
                 }
             }
         },

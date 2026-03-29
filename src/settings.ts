@@ -27,6 +27,20 @@ class GeneralSettings extends FormattingSettingsCard
         value: "Latest Date"
     });
 
+    showEarliest = new formattingSettings.ToggleSwitch(
+    {
+        name: "showEarliest",
+        displayName: "Show Earliest Date",
+        value: true
+    });
+
+    showLatest = new formattingSettings.ToggleSwitch(
+    {
+        name: "showLatest",
+        displayName: "Show Latest Date",
+        value: true
+    });
+
     dateFormat = new formattingSettings.ItemDropdown(
     {
         name: "dateFormat",
@@ -43,6 +57,8 @@ class GeneralSettings extends FormattingSettingsCard
 
     slices: FormattingSettingsSlice[] =
     [
+        this.showEarliest,
+        this.showLatest,
         this.earliestLabel,
         this.latestLabel,
         this.dateFormat

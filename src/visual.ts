@@ -182,6 +182,8 @@ export class Visual implements IVisual
         const earliestLabel: string = this.formattingSettings.generalSettings.earliestLabel.value || "Earliest Date";
         const latestLabel: string = this.formattingSettings.generalSettings.latestLabel.value || "Latest Date";
         this.dateFormat = (this.formattingSettings.generalSettings.dateFormat.value?.value as string) ?? "dd/MM/yyyy";
+        const showEarliest: boolean = this.formattingSettings.generalSettings.showEarliest.value;
+        const showLatest: boolean = this.formattingSettings.generalSettings.showLatest.value;
 
         const fontFamily: string = this.formattingSettings.styleSettings.fontFamily.value;
         const fontSize: number = this.formattingSettings.styleSettings.fontSize.value;
@@ -230,19 +232,25 @@ export class Visual implements IVisual
         // Build bookmarks
         this.bookmarks = [];
 
-        this.bookmarks.push(
+        if(showEarliest)
         {
-            label: `${earliestLabel} - ${formatDate(minDate, this.dateFormat)}`,
-            date: minDate,
-            isAuto: true
-        });
+            this.bookmarks.push(
+            {
+                label: `${earliestLabel} - ${formatDate(minDate, this.dateFormat)}`,
+                date: minDate,
+                isAuto: true
+            });
+        }
 
-        this.bookmarks.push(
+        if(showLatest)
         {
-            label: `${latestLabel} - ${formatDate(maxDate, this.dateFormat)}`,
-            date: maxDate,
-            isAuto: true
-        });
+            this.bookmarks.push(
+            {
+                label: `${latestLabel} - ${formatDate(maxDate, this.dateFormat)}`,
+                date: maxDate,
+                isAuto: true
+            });
+        }
 
         if (categorical.values)
         {
@@ -286,9 +294,9 @@ export class Visual implements IVisual
         {
             this.selectedDate = existingFilter;
         }
-        else if(!this.selectedDate && this.bookmarks.length >= 2)
+        else if(!this.selectedDate && this.bookmarks.length > 0)
         {
-            this.selectedDate = this.bookmarks[1].date;
+            this.selectedDate = this.bookmarks[0].date;
         }
 
         // Sync dropdown to match selected date
