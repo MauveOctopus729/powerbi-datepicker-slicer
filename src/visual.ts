@@ -148,20 +148,16 @@ export class Visual implements IVisual
             VisualFormattingSettingsModel, dataView
         );
 
-        const objects = dataView.metadata?.objects;
-        const generalProps = objects?.["general"] as any;
-        const styleProps = objects?.["style"] as any;
+        const earliestLabel: string = this.formattingSettings.generalSettings.earliestLabel.value || "Earliest Date";
+        const latestLabel: string = this.formattingSettings.generalSettings.latestLabel.value || "Latest Date";
+        this.dateFormat = (this.formattingSettings.generalSettings.dateFormat.value?.value as string) ?? "dd/MM/yyyy";
 
-        const earliestLabel: string = generalProps?.earliestLabel ?? "Earliest Date";
-        const latestLabel: string = generalProps?.latestLabel ?? "Latest Date";
-        this.dateFormat = generalProps?.dateFormat ?? "dd/MM/yyyy";
-
-        const fontFamily: string = styleProps?.fontFamily ?? "'Segoe UI'";
-        const fontSize: number = styleProps?.fontSize ?? 12;
-        const fontColor: string = (styleProps?.fontColor as any)?.solid?.color ?? "#333";
-        const accentColor: string = (styleProps?.accentColor as any)?.solid?.color ?? "#4C78A8";
-        const bgColor: string = (styleProps?.backgroundColor as any)?.solid?.color ?? "transparent";
-        const transparentBg: boolean = styleProps?.transparentBackground ?? false;
+        const fontFamily: string = this.formattingSettings.styleSettings.fontFamily.value;
+        const fontSize: number = this.formattingSettings.styleSettings.fontSize.value;
+        const fontColor: string = this.formattingSettings.styleSettings.fontColor.value.value;
+        const accentColor: string = this.formattingSettings.styleSettings.accentColor.value.value;
+        const bgColor: string = this.formattingSettings.styleSettings.backgroundColor.value.value;
+        const transparentBg: boolean = this.formattingSettings.styleSettings.transparentBackground.value;
 
         this.applyVisualStyles(fontFamily, fontSize, fontColor, accentColor, bgColor, transparentBg);
 
@@ -381,10 +377,12 @@ export class Visual implements IVisual
         this.dropdown.style.fontSize = `${fontSize}px`;
         this.dropdown.style.color = fontColor;
         this.dropdown.style.borderColor = accentColor;
+        this.dropdown.style.fontFamily = fontFamily;
 
         this.datePicker.style.fontSize = `${fontSize}px`;
         this.datePicker.style.color = fontColor;
         this.datePicker.style.borderColor = accentColor;
+        this.datePicker.style.fontFamily = fontFamily;
 
     }
 
