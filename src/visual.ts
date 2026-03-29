@@ -161,8 +161,9 @@ export class Visual implements IVisual
         const fontColor: string = (styleProps?.fontColor as any)?.solid?.color ?? "#333";
         const accentColor: string = (styleProps?.accentColor as any)?.solid?.color ?? "#4C78A8";
         const bgColor: string = (styleProps?.backgroundColor as any)?.solid?.color ?? "transparent";
+        const transparentBg: boolean = styleProps?.transparentBackground ?? false;
 
-        this.applyVisualStyles(fontFamily, fontSize, fontColor, accentColor, bgColor);
+        this.applyVisualStyles(fontFamily, fontSize, fontColor, accentColor, bgColor, transparentBg);
 
         // Extract date column
         const categorical = dataView.categorical;
@@ -249,11 +250,32 @@ export class Visual implements IVisual
             this.dropdown.appendChild(opt);
         }
 
-        // Default to latest date
-        if(!this.selectedDate && this.bookmarks.length >= 2)
+        // Check for existing filter (e.g. from a bookmark restore)
+        const existingFilter = this.getExistingFilter(options);
+
+        if(existingFilter)
+        {
+            this.selectedDate = existingFilter;
+        }
+        else if(!this.selectedDate && this.bookmarks.length >= 2)
         {
             this.selectedDate = this.bookmarks[1].date;
-            this.dropdown.value = "1";
+        }
+
+        // Sync dropdown to match selected date
+        if(this.selectedDate)
+        {
+            let matchedIdx = -1;
+            const selectedStr = toInputDate(this.selectedDate);
+            for(let i = 0; i < this.bookmarks.length; i++)
+            {
+                if(toInputDate(this.bookmarks[i].date) === selectedStr)
+                {
+                    matchedIdx = i;
+                    break;
+                }
+            }
+            this.dropdown.value = matchedIdx >= 0 ? String(matchedIdx) : "__custom__";
         }
 
         if(this.selectedDate)
@@ -329,17 +351,32 @@ export class Visual implements IVisual
         );
     }
 
+    private getExistingFilter(options: VisualUpdateOptions): Date | null
+    {
+        const filters = options.jsonFilters as models.BasicFilter[];
+        if(!filters || filters.length === 0) return null;
+
+        const filter = filters[0];
+        if(filter && filter.values && filter.values.length > 0)
+        {
+            const d = coerceToDate(filter.values[0]);
+            return d;
+        }
+        return null;
+    }
+
     private applyVisualStyles(
         fontFamily: string,
         fontSize: number,
         fontColor: string,
         accentColor: string,
-        bgColor: string
+        bgColor: string,
+        transparentBg: boolean
     ): void
     {
         this.container.style.fontFamily = fontFamily;
         this.container.style.color = fontColor;
-        this.container.style.backgroundColor = bgColor;
+        this.container.style.backgroundColor = transparentBg ? "transparent" : bgColor;
 
         this.dropdown.style.fontSize = `${fontSize}px`;
         this.dropdown.style.color = fontColor;

@@ -81,6 +81,10 @@
                 "backgroundColor": {
                     "displayName": "Background Colour",
                     "type": { "fill": { "solid": { "color": true } } }
+                },
+                "transparentBackground": {
+                    "displayName": "Transparent Background",
+                    "type": { "bool": true }
                 }
             }
         }

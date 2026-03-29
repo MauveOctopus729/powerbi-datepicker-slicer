@@ -89,8 +89,16 @@ class StyleSettings extends FormattingSettingsCard
         value: { value: "#FFFFFF" }
     });
 
+    transparentBackground = new formattingSettings.ToggleSwitch(
+    {
+        name: "transparentBackground",
+        displayName: "Transparent Background",
+        value: false
+    });
+
     slices: FormattingSettingsSlice[] =
     [
+        this.transparentBackground,
         this.fontFamily,
         this.fontSize,
         this.fontColor,
